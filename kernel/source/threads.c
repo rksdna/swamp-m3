@@ -33,14 +33,14 @@
 
 struct context
 {
-    u32_t R8;
-    u32_t R9;
-    u32_t R10;
-    u32_t R11;
     u32_t R4;
     u32_t R5;
     u32_t R6;
     u32_t R7;
+    u32_t R8;
+    u32_t R9;
+    u32_t R10;
+    u32_t R11;
     u32_t R0;
     u32_t R1;
     u32_t R2;
@@ -97,8 +97,9 @@ void startup_handler(void)
     copy(&data_section_begin, &text_section_end, (&data_section_end - &data_section_begin) * sizeof(u32_t));
     fill(&bss_section_begin, 0, (&bss_section_end - &bss_section_begin) * sizeof(u32_t));
 
-    /*SCB->SHP[0] = SCB_SHPx_PR_3;
-    SCB->SHP[1] = SCB_SHPx_PR_2;*/
+    SCB->SHP[7] = 0xF0; // Minimum SVC priority
+    SCB->SHP[10] = 0xF0; // Minimum pending SVC priority
+    SCB->SHP[11] = 0x00; // Maximum STK priority
 
     asm volatile ("msr psp, %0\n"
                   "msr control, %1\n"
@@ -151,15 +152,7 @@ __attribute__((naked))
 void pending_svc_handler(void)
 {
     asm volatile ("mrs r1, psp\n"
-                  "sub r1, r1, #16\n"
-                  "stmia r1!, {r4, r5, r6, r7}\n"
-                  "mov r4, r8\n"
-                  "mov r5, r9\n"
-                  "mov r6, sl\n"
-                  "mov r7, fp\n"
-                  "sub r1,r1, #32\n"
-                  "stmia r1!, {r4, r5, r6, r7}\n"
-                  "sub r1, r1, #16\n"
+                  "stmdb r1!, {r4 - r11}\n"
                   "ldr r3, =active_thread\n"
                   "ldr r2, [r3, #0] \n"
                   "str r1, [r2, #0]\n"
@@ -167,12 +160,7 @@ void pending_svc_handler(void)
                   "ldr r2, [r4, #0]\n"
                   "str r2, [r3, #0]\n"
                   "ldr r3, [r2, #0]\n"
-                  "ldmia r3!, {r4, r5, r6, r7}\n"
-                  "mov r8, r4\n"
-                  "mov r9, r5\n"
-                  "mov sl, r6\n"
-                  "mov fp, r7\n"
-                  "ldmia r3!, {r4, r5, r6, r7}\n"
+                  "ldmia r3!, {r4 - r11}\n"
                   "msr psp, r3\n"
                   "bx lr\n" : : : );
 }
