@@ -24,7 +24,7 @@
 #ifndef USART_H
 #define USART_H
 
-#warning "Not checked"
+#warning "Layout not approved"
 
 #include <types.h>
 

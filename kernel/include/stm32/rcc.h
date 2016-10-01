@@ -24,7 +24,7 @@
 #ifndef RCC_H
 #define RCC_H
 
-#warning "Not checked"
+#warning "Layout not approved"
 
 #include <types.h>
 

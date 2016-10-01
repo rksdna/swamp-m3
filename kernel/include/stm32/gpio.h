@@ -24,7 +24,7 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-#warning "Not checked"
+#warning "Layout not approved"
 
 #include <types.h>
 
