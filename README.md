@@ -10,5 +10,5 @@ make FILES="samples/source/kernel_sample.c" DIRS="kernel" all
 
 Building your application:
 ```
-make TARGET="app" DIRS="app kernel cdc" all
+make TARGET="app" DIRS="app kernel" all
 ```
