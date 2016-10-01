@@ -24,7 +24,7 @@
 #ifndef USART_H
 #define USART_H
 
-// WARNING!!!
+#warning "Not checked"
 
 #include <types.h>
 

@@ -24,7 +24,7 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-// WARNING!!!
+#warning "Not checked"
 
 #include <types.h>
 

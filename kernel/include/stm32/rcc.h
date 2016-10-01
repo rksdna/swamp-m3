@@ -24,7 +24,7 @@
 #ifndef RCC_H
 #define RCC_H
 
-// WARNING!!!
+#warning "Not checked"
 
 #include <types.h>
 
