@@ -132,6 +132,114 @@ extern void irq30_handler(void);
 __attribute__ ((weak, alias("irq_handler")))
 extern void irq31_handler(void);
 
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq32_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq33_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq34_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq35_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq36_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq37_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq38_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq39_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq40_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq41_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq42_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq43_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq44_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq45_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq46_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq47_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq48_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq49_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq50_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq51_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq52_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq53_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq54_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq55_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq56_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq57_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq58_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq59_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq60_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq61_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq62_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq63_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq64_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq65_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq66_handler(void);
+
+__attribute__ ((weak, alias("irq_handler")))
+extern void irq67_handler(void);
+
 __attribute__ ((section(".startup")))
 void * const startup_table[] =
 {
@@ -182,5 +290,41 @@ void * const startup_table[] =
     irq28_handler,
     irq29_handler,
     irq30_handler,
-    irq31_handler
+    irq31_handler,
+    irq32_handler,
+    irq33_handler,
+    irq34_handler,
+    irq35_handler,
+    irq36_handler,
+    irq37_handler,
+    irq38_handler,
+    irq39_handler,
+    irq40_handler,
+    irq41_handler,
+    irq42_handler,
+    irq43_handler,
+    irq44_handler,
+    irq45_handler,
+    irq46_handler,
+    irq47_handler,
+    irq48_handler,
+    irq49_handler,
+    irq50_handler,
+    irq51_handler,
+    irq52_handler,
+    irq53_handler,
+    irq54_handler,
+    irq55_handler,
+    irq56_handler,
+    irq57_handler,
+    irq58_handler,
+    irq59_handler,
+    irq60_handler,
+    irq61_handler,
+    irq62_handler,
+    irq63_handler,
+    irq64_handler,
+    irq65_handler,
+    irq66_handler,
+    irq67_handler
 };

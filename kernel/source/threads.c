@@ -51,6 +51,12 @@ struct context
     u32_t PSR;
 };
 
+struct fault
+{
+    u32_t mask;
+    const char *description;
+};
+
 struct bind
 {
     volatile u32_t *status;
@@ -97,9 +103,14 @@ void startup_handler(void)
     copy(&data_section_begin, &text_section_end, (&data_section_end - &data_section_begin) * sizeof(u32_t));
     fill(&bss_section_begin, 0, (&bss_section_end - &bss_section_begin) * sizeof(u32_t));
 
-    SCB->SHP[7] = 0xF0; // Minimum SVC priority
-    SCB->SHP[10] = 0xF0; // Minimum pending SVC priority
-    SCB->SHP[11] = 0x00; // Maximum STK priority
+    SCB->AIRCR = SCB_AIRCR_VECTKEY_KEY | SCB_AIRCR_PRIGROUP_1 | SCB_AIRCR_PRIGROUP_0;
+
+    SCB->SHP[7] = 0xFF;
+    SCB->SHP[10] = 0xFF;
+    SCB->SHP[11] = 0x00;
+
+    SCB->CCR = SCB_CCR_DIV_0_TRP | SCB_CCR_UNALIGN_TRP;
+    SCB->SHCSR = 0;
 
     asm volatile ("msr psp, %0\n"
                   "msr control, %1\n"
@@ -134,6 +145,44 @@ void fault_handler(void)
     debug("r1: %8x  lr: %8x\n", *(stack + 1), *(stack + 5));
     debug("r2: %8x  pc: %8x\n", *(stack + 2), *(stack + 6));
     debug("r3: %8x psr: %8x\n", *(stack + 3), *(stack + 7));
+
+    if (SCB->HFSR & SCB_HFSR_VECTTBL)
+        debug("Vector table bus fault\n");
+
+    if (SCB->HFSR & SCB_HFSR_FORCED)
+    {
+        static const struct fault faults[] =
+        {
+            {SCB_CFSR_MSTKERR, "Exception stacking violation"},
+            {SCB_CFSR_MUNSTKERR, "Exception unstacking violation"},
+            {SCB_CFSR_DACCVIOL, "Data access violation"},
+            {SCB_CFSR_IACCVIOL, "Instruction access violation"},
+            {SCB_CFSR_STKERR, "Exception stacking bus fault"},
+            {SCB_CFSR_UNSTKERR, "Exception unstacking bus fault"},
+            {SCB_CFSR_IBUSERR, "Instruction prefetch bus fault"},
+            {SCB_CFSR_PRECISERR, "Precise data bus fault"},
+            {SCB_CFSR_IMPRECISERR, "Imprecise data bus fault"},
+            {SCB_CFSR_NOCP, "Coprocessor access"},
+            {SCB_CFSR_UNDEFINSTR, "Undefined instruction"},
+            {SCB_CFSR_INVSTATE, "Enter an invalid instruction set state"},
+            {SCB_CFSR_INVPC, "Invalid EXC_RETURN value"},
+            {SCB_CFSR_UNALIGNED, "Unaligned load or store"},
+            {SCB_CFSR_DIVBYZERO, "Divide by zero"},
+        };
+
+        u32_t count = sizeof(faults) / sizeof(struct fault);
+        while (count--)
+        {
+            if (SCB->CFSR & faults[count].mask)
+                debug("%s\n", faults[count].description);
+        }
+
+        if (SCB->CFSR & SCB_CFSR_BFARVALID)
+            debug("bfar: %8x\n", SCB->BFAR);
+
+        if (SCB->CFSR & SCB_CFSR_MMARVALID)
+            debug("mmfar: %8x\n", SCB->MMFAR);
+    }
 
     stop();
 #endif
