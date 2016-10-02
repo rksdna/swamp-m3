@@ -28,20 +28,13 @@
 
 struct usart
 {
-    volatile u16_t SR;
-    u16_t RESERVED0;
-    volatile u16_t DR;
-    u16_t RESERVED1;
-    volatile u16_t BRR;
-    u16_t RESERVED2;
-    volatile u16_t CR1;
-    u16_t RESERVED3;
-    volatile u16_t CR2;
-    u16_t RESERVED4;
-    volatile u16_t CR3;
-    u16_t RESERVED5;
-    volatile u16_t GTPR;
-    u16_t RESERVED6;
+    volatile u32_t SR;
+    volatile u32_t DR;
+    volatile u32_t BRR;
+    volatile u32_t CR1;
+    volatile u32_t CR2;
+    volatile u32_t CR3;
+    volatile u32_t GTPR;
 };
 
 #define USART1 ((struct usart *)0x40013800)
@@ -50,67 +43,67 @@ struct usart
 #define UART4 ((struct usart *)0x40004C00)
 #define UART5 ((struct usart *)0x40005000)
 
-#define USART_SR_PE ((u16_t)0x0001)
-#define USART_SR_FE ((u16_t)0x0002)
-#define USART_SR_NE ((u16_t)0x0004)
-#define USART_SR_ORE ((u16_t)0x0008)
-#define USART_SR_IDLE ((u16_t)0x0010)
-#define USART_SR_RXNE ((u16_t)0x0020)
-#define USART_SR_TC ((u16_t)0x0040)
-#define USART_SR_TXE ((u16_t)0x0080)
-#define USART_SR_LBD ((u16_t)0x0100)
-#define USART_SR_CTS ((u16_t)0x0200)
+#define USART_SR_PE ((u32_t)0x00000001)
+#define USART_SR_FE ((u32_t)0x00000002)
+#define USART_SR_NE ((u32_t)0x00000004)
+#define USART_SR_ORE ((u32_t)0x00000008)
+#define USART_SR_IDLE ((u32_t)0x00000010)
+#define USART_SR_RXNE ((u32_t)0x00000020)
+#define USART_SR_TC ((u32_t)0x00000040)
+#define USART_SR_TXE ((u32_t)0x00000080)
+#define USART_SR_LBD ((u32_t)0x00000100)
+#define USART_SR_CTS ((u32_t)0x00000200)
 
-#define USART_DR_DR ((u16_t)0x01FF)
+#define USART_DR_DR ((u32_t)0x000001FF)
 
-#define USART_BRR_DIV ((u16_t)0xFFFF)
+#define USART_BRR_DIV ((u32_t)0x0000FFFF)
 
-#define USART_CR1_SBK ((u16_t)0x0001)
-#define USART_CR1_RWU ((u16_t)0x0002)
-#define USART_CR1_RE ((u16_t)0x0004)
-#define USART_CR1_TE ((u16_t)0x0008)
-#define USART_CR1_IDLEIE ((u16_t)0x0010)
-#define USART_CR1_RXNEIE ((u16_t)0x0020)
-#define USART_CR1_TCIE ((u16_t)0x0040)
-#define USART_CR1_TXEIE ((u16_t)0x0080)
-#define USART_CR1_PEIE ((u16_t)0x0100)
-#define USART_CR1_PS ((u16_t)0x0200)
-#define USART_CR1_PCE ((u16_t)0x0400)
-#define USART_CR1_WAKE ((u16_t)0x0800)
-#define USART_CR1_M ((u16_t)0x1000)
-#define USART_CR1_UE ((u16_t)0x2000)
-#define USART_CR1_OVER8 ((u16_t)0x8000)
+#define USART_CR1_SBK ((u32_t)0x00000001)
+#define USART_CR1_RWU ((u32_t)0x00000002)
+#define USART_CR1_RE ((u32_t)0x00000004)
+#define USART_CR1_TE ((u32_t)0x00000008)
+#define USART_CR1_IDLEIE ((u32_t)0x00000010)
+#define USART_CR1_RXNEIE ((u32_t)0x00000020)
+#define USART_CR1_TCIE ((u32_t)0x00000040)
+#define USART_CR1_TXEIE ((u32_t)0x00000080)
+#define USART_CR1_PEIE ((u32_t)0x00000100)
+#define USART_CR1_PS ((u32_t)0x00000200)
+#define USART_CR1_PCE ((u32_t)0x00000400)
+#define USART_CR1_WAKE ((u32_t)0x00000800)
+#define USART_CR1_M ((u32_t)0x00001000)
+#define USART_CR1_UE ((u32_t)0x00002000)
+#define USART_CR1_OVER8 ((u32_t)0x00008000)
 
-#define USART_CR2_ADD ((u16_t)0x000F)
-#define USART_CR2_LBDL ((u16_t)0x0020)
-#define USART_CR2_LBDIE ((u16_t)0x0040)
-#define USART_CR2_LBCL ((u16_t)0x0100)
-#define USART_CR2_CPHA ((u16_t)0x0200)
-#define USART_CR2_CPOL ((u16_t)0x0400)
-#define USART_CR2_CLKEN ((u16_t)0x0800)
-#define USART_CR2_STOP ((u16_t)0x3000)
-#define USART_CR2_STOP_0 ((u16_t)0x1000)
-#define USART_CR2_STOP_1 ((u16_t)0x2000)
-#define USART_CR2_STOP_ONE ((u16_t)0x0000)
-#define USART_CR2_STOP_HALF ((u16_t)0x1000)
-#define USART_CR2_STOP_TWO ((u16_t)0x2000)
-#define USART_CR2_STOP_ONE_AND_HALF ((u16_t)0x3000)
-#define USART_CR2_LINEN ((u16_t)0x4000)
+#define USART_CR2_ADD ((u32_t)0x0000000F)
+#define USART_CR2_LBDL ((u32_t)0x00000020)
+#define USART_CR2_LBDIE ((u32_t)0x00000040)
+#define USART_CR2_LBCL ((u32_t)0x00000100)
+#define USART_CR2_CPHA ((u32_t)0x00000200)
+#define USART_CR2_CPOL ((u32_t)0x00000400)
+#define USART_CR2_CLKEN ((u32_t)0x00000800)
+#define USART_CR2_STOP ((u32_t)0x00003000)
+#define USART_CR2_STOP_0 ((u32_t)0x00001000)
+#define USART_CR2_STOP_1 ((u32_t)0x00002000)
+#define USART_CR2_STOP_ONE ((u32_t)0x00000000)
+#define USART_CR2_STOP_HALF ((u32_t)0x00001000)
+#define USART_CR2_STOP_TWO ((u32_t)0x00002000)
+#define USART_CR2_STOP_ONE_AND_HALF ((u32_t)0x00003000)
+#define USART_CR2_LINEN ((u32_t)0x00004000)
 
-#define USART_CR3_EIE ((u16_t)0x0001)
-#define USART_CR3_IREN ((u16_t)0x0002)
-#define USART_CR3_IRLP ((u16_t)0x0004)
-#define USART_CR3_HDSEL ((u16_t)0x0008)
-#define USART_CR3_NACK ((u16_t)0x0010)
-#define USART_CR3_SCEN ((u16_t)0x0020)
-#define USART_CR3_DMAR ((u16_t)0x0040)
-#define USART_CR3_DMAT ((u16_t)0x0080)
-#define USART_CR3_RTSE ((u16_t)0x0100)
-#define USART_CR3_CTSE ((u16_t)0x0200)
-#define USART_CR3_CTSIE ((u16_t)0x0400)
-#define USART_CR3_ONEBIT ((u16_t)0x0800)
+#define USART_CR3_EIE ((u32_t)0x00000001)
+#define USART_CR3_IREN ((u32_t)0x00000002)
+#define USART_CR3_IRLP ((u32_t)0x00000004)
+#define USART_CR3_HDSEL ((u32_t)0x00000008)
+#define USART_CR3_NACK ((u32_t)0x00000010)
+#define USART_CR3_SCEN ((u32_t)0x00000020)
+#define USART_CR3_DMAR ((u32_t)0x00000040)
+#define USART_CR3_DMAT ((u32_t)0x00000080)
+#define USART_CR3_RTSE ((u32_t)0x00000100)
+#define USART_CR3_CTSE ((u32_t)0x00000200)
+#define USART_CR3_CTSIE ((u32_t)0x00000400)
+#define USART_CR3_ONEBIT ((u32_t)0x00000800)
 
-#define USART_GTPR_PSC ((u16_t)0x00FF)
-#define USART_GTPR_GT ((u16_t)0xFF00)
+#define USART_GTPR_PSC ((u32_t)0x000000FF)
+#define USART_GTPR_GT ((u32_t)0x0000FF00)
 
 #endif

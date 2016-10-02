@@ -28,13 +28,13 @@
 
 struct gpio
 {
- volatile u32_t CRL;
- volatile u32_t CRH;
- volatile u32_t IDR;
- volatile u32_t ODR;
- volatile u32_t BSRR;
- volatile u32_t BRR;
- volatile u32_t LCKR;
+    volatile u32_t CRL;
+    volatile u32_t CRH;
+    volatile u32_t IDR;
+    volatile u32_t ODR;
+    volatile u32_t BSRR;
+    volatile u32_t BRR;
+    volatile u32_t LCKR;
 };
 
 #define GPIOA ((struct gpio *)0x40010800)
