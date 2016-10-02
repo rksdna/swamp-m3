@@ -24,8 +24,6 @@
 #ifndef USART_H
 #define USART_H
 
-#warning "Layout not approved"
-
 #include <types.h>
 
 struct usart
@@ -49,8 +47,8 @@ struct usart
 #define USART1 ((struct usart *)0x40013800)
 #define USART2 ((struct usart *)0x40004400)
 #define USART3 ((struct usart *)0x40004800)
-#define USART4 ((struct usart *)0x40004C00)
-#define USART5 ((struct usart *)0x40005000)
+#define UART4 ((struct usart *)0x40004C00)
+#define UART5 ((struct usart *)0x40005000)
 
 #define USART_SR_PE ((u16_t)0x0001)
 #define USART_SR_FE ((u16_t)0x0002)
@@ -93,6 +91,10 @@ struct usart
 #define USART_CR2_STOP ((u16_t)0x3000)
 #define USART_CR2_STOP_0 ((u16_t)0x1000)
 #define USART_CR2_STOP_1 ((u16_t)0x2000)
+#define USART_CR2_STOP_ONE ((u16_t)0x0000)
+#define USART_CR2_STOP_HALF ((u16_t)0x1000)
+#define USART_CR2_STOP_TWO ((u16_t)0x2000)
+#define USART_CR2_STOP_ONE_AND_HALF ((u16_t)0x3000)
 #define USART_CR2_LINEN ((u16_t)0x4000)
 
 #define USART_CR3_EIE ((u16_t)0x0001)
@@ -109,14 +111,6 @@ struct usart
 #define USART_CR3_ONEBIT ((u16_t)0x0800)
 
 #define USART_GTPR_PSC ((u16_t)0x00FF)
-#define USART_GTPR_PSC_0 ((u16_t)0x0001)
-#define USART_GTPR_PSC_1 ((u16_t)0x0002)
-#define USART_GTPR_PSC_2 ((u16_t)0x0004)
-#define USART_GTPR_PSC_3 ((u16_t)0x0008)
-#define USART_GTPR_PSC_4 ((u16_t)0x0010)
-#define USART_GTPR_PSC_5 ((u16_t)0x0020)
-#define USART_GTPR_PSC_6 ((u16_t)0x0040)
-#define USART_GTPR_PSC_7 ((u16_t)0x0080)
 #define USART_GTPR_GT ((u16_t)0xFF00)
 
 #endif

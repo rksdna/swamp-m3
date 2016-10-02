@@ -26,11 +26,11 @@ struct data
 
 static struct thread thread_1;
 static u8_t stack_1[256];
-static struct data data_1 = {"blink 1", 20, 200, GPIO_ODR_1};
+static struct data data_1 = {"blink 1", 20, 200, GPIO_ODR_ODR_14};
 
 static struct thread thread_2;
 static u8_t stack_2[256];
-static struct data data_2 = {"blink 2", 10, 300, GPIO_ODR_2};
+static struct data data_2 = {"blink 2", 10, 300, GPIO_ODR_ODR_15};
 
 static void blink(struct data *data)
 {
@@ -55,30 +55,13 @@ void main(void)
 {
     u32_t count = 20;
 
-    RCC->AHBENR = RCC_AHBENR_SRAMEN | RCC_AHBENR_FLITFEN;
+    RCC->AHBENR = RCC_AHBENR_SRAMEN;
     RCC->APB2ENR = RCC_APB2ENR_USART1EN | RCC_APB2ENR_IOPAEN;
 
-    GPIOA->CRL =
-            GPIO_CRx_PULLED_INPUT(0) |
-            GPIO_CRx_PULLED_INPUT(1) |
-            GPIO_CRx_PULLED_INPUT(2) |
-            GPIO_CRx_PULLED_INPUT(3) |
-            GPIO_CRx_PULLED_INPUT(4) |
-            GPIO_CRx_PULLED_INPUT(5) |
-            GPIO_CRx_PULLED_INPUT(6) |
-            GPIO_CRx_PULLED_INPUT(7);
+    GPIOA->CRL = GPIO_CRL_CR0_FI | GPIO_CRL_CR1_FI | GPIO_CRL_CR2_FI | GPIO_CRL_CR3_FI | GPIO_CRL_CR4_FI | GPIO_CRL_CR5_FI | GPIO_CRL_CR6_FI | GPIO_CRL_CR7_FI;
+    GPIOA->CRH = GPIO_CRH_CR8_FI | GPIO_CRH_CR9_PPA | GPIO_CRH_CR10_FI | GPIO_CRH_CR11_FI | GPIO_CRH_CR12_FI | GPIO_CRH_CR13_FI | GPIO_CRH_CR14_PPO | GPIO_CRH_CR15_PPO;
 
-    GPIOA->CRH =
-            GPIO_CRx_PULLED_INPUT(0) |
-            GPIO_CRx_ALTERNATE_OUTPUT_50MHz(1) |
-            GPIO_CRx_PULLED_INPUT(2) |
-            GPIO_CRx_PULLED_INPUT(3) |
-            GPIO_CRx_PULLED_INPUT(4) |
-            GPIO_CRx_PULLED_INPUT(5) |
-            GPIO_CRx_PULLED_INPUT(6) |
-            GPIO_CRx_PULLED_INPUT(7);
-
-    USART1->CR1 = USART_CR1_UE;
+    USART1->CR1 = USART_CR1_UE ;
     USART1->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_PCE | USART_CR1_M;
     USART1->CR2 = 0;
     USART1->CR3 = 0;
