@@ -26,7 +26,6 @@
 TARGET ?= swamp
 SCRIPT ?= kernel/target/stm32f103xc.ld
 DIRS ?= kernel
-FILES ?=
 PORT ?= /dev/ttyUSB0
 INCDIRS = $(addsuffix /include, $(DIRS))
 SRCDIRS = $(addsuffix /source, $(DIRS))
@@ -35,8 +34,9 @@ HEX = $(TARGET).hex
 ELF = $(TARGET).elf
 MAP = $(TARGET).map
 LST = $(TARGET).lst
+DEF = $(foreach DIR, $(DIRS),-D _$(DIR)_)
 INC = $(foreach DIR, $(INCDIRS),-I $(DIR))
-SRC = $(foreach DIR, $(SRCDIRS), $(wildcard $(DIR)/*.c)) $(FILES)
+SRC = $(foreach DIR, $(SRCDIRS), $(wildcard $(DIR)/*.c))
 OBJ = $(SRC:.c=.o)
 DEP = $(SRC:.c=.d)
 
@@ -52,7 +52,7 @@ SZ = $(PREFIX)size
 BS = swamp-boot
 RM = rm -f
 
-CFLAGS = -nostdinc -mcpu=cortex-m3 -mthumb -Wall -Wno-main -Os -g -MD $(INC) 
+CFLAGS = -nostdinc -mcpu=cortex-m3 -mthumb -Wall -Wno-main -Os -g -MD $(INC) $(DEF)
 LFLAGS = -nostdlib -T $(SCRIPT) -Map $(MAP) 
 
 -include $(DEP)

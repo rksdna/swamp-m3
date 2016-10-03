@@ -21,16 +21,17 @@
  * THE SOFTWARE.
  */
 
+#include <stm32/flash.h>
 #include <stm32/usart.h>
 #include <stm32/gpio.h>
 #include <stm32/rcc.h>
 #include <threads.h>
+#include <timers.h>
 #include <debug.h>
 #include <tools.h>
-#include <stm32/flash.h>
-#include <cdc.h>
+#include "board.h"
 
-void debug_put(void *data, char value)
+static void debug_put(void *data, char value)
 {
     while (~USART1->SR & USART_SR_TXE)
         continue;
@@ -40,31 +41,11 @@ void debug_put(void *data, char value)
 
 struct stream debug_stream = {debug_put, 0};
 
-static u8_t buffer[1024];
-static struct thread service_thread;
-static u8_t stack[256];
-
-static void service(void *data)
+void startup_board(void)
 {
-    WASTE(data);
-    while (1)
-    {
-        wait_signal(has_cdc_line_coding);
-        const struct line_coding *coding = get_cdc_line_coding();
-        debug("baudrate: %d, data %d, parity %d, stop %d\n", coding->baud_rate, coding->data_bits, coding->parity_type, coding->stop_bits);
-    }
-}
+    FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_72MHz;
 
-void pullup_cdc(u32_t state)
-{
-    GPIOB->BSRR = state ? GPIO_BSRR_BS_15 : GPIO_BSRR_BR_15;
-}
-
-void main(void)
-{
-    FLASH->ACR = FLASH_ACR_PRFTBE | FLASH_ACR_LATENCY_2;
-
-    RCC->CFGR = RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL_MUL9 | RCC_CFGR_PPRE1_2 | RCC_CFGR_ADCPRE_DIV6;
+    RCC->CFGR = RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL_MUL9 | RCC_CFGR_PPRE1_2;
     RCC->CR = RCC_CR_HSION | RCC_CR_HSEON;
 
     wait_status(&RCC->CR, RCC_CR_HSERDY);
@@ -73,10 +54,8 @@ void main(void)
 
     wait_status(&RCC->CR, RCC_CR_PLLRDY);
 
-    RCC->CFGR = RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL_MUL16 | RCC_CFGR_PPRE1_2 | RCC_CFGR_ADCPRE_DIV6 | RCC_CFGR_SW_PLL;
-    RCC->CSR = RCC_CSR_RMVF | RCC_CSR_LSION;
+    RCC->CFGR = RCC_CFGR_PLLSRC | RCC_CFGR_PLLMULL_MUL9 | RCC_CFGR_PPRE1_2 | RCC_CFGR_SW_PLL;
 
-    RCC->AHBENR = RCC_AHBENR_SRAMEN;
     RCC->APB1ENR = RCC_APB1ENR_USBEN;
     RCC->APB2ENR = RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_USART1EN;
 
@@ -92,26 +71,12 @@ void main(void)
     USART1->CR3 = 0;
     USART1->BRR = 625;
 
+    start_timers_clock(72000);
+
     debug("hello\n");
+}
 
-    start_thread(&service_thread, service, 0, stack, sizeof(stack));
-
-    start_cdc_service();
-    set_cdc_timeout(10);
-    while (1)
-    {
-        wait_signal(has_cdc_connection);
-        debug("connected\n");
-        while (has_cdc_connection())
-        {
-            const u32_t count = read_cdc_data(buffer, sizeof(buffer));
-            if (count)
-            {
-                write_cdc_data(buffer, count);
-                debug("%m\n", buffer, count);
-            }
-        }
-
-        debug("disconnected\n");
-    }
+void board_usb_pullup(u32_t state)
+{
+    GPIOB->BSRR = state ? GPIO_BSRR_BS15 : GPIO_BSRR_BR15;
 }
