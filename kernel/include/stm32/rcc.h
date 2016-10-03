@@ -1,7 +1,28 @@
+/*
+ * Swamp - cooperative multitasking operating system
+ * Copyright (c) 2016 rksdna
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 #ifndef RCC_H
 #define RCC_H
-
-#warning "Layout not approved"
 
 #include <types.h>
 
@@ -90,20 +111,19 @@ struct rcc
 #define RCC_CFGR_ADCPRE_DIV6 ((u32_t)0x00008000)
 #define RCC_CFGR_ADCPRE_DIV8 ((u32_t)0x0000C000)
 #define RCC_CFGR_PLLSRC ((u32_t)0x00010000)
+#define RCC_CFGR_PLLSRC_HSI_DIV2 ((u32_t)0x00000000)
+#define RCC_CFGR_PLLSRC_PREDIV1 ((u32_t)0x00010000)
+#define RCC_CFGR_PLLSRC_HSE ((u32_t)0x00010000)
 #define RCC_CFGR_PLLXTPRE ((u32_t)0x00020000)
+#define RCC_CFGR_PLLXTPRE_PREDIV1 ((u32_t)0x00000000)
+#define RCC_CFGR_PLLXTPRE_HSE ((u32_t)0x00000000)
+#define RCC_CFGR_PLLXTPRE_PREDIV1_DIV2 ((u32_t)0x00020000)
+#define RCC_CFGR_PLLXTPRE_HSE_DIV2 ((u32_t)0x00020000)
 #define RCC_CFGR_PLLMULL ((u32_t)0x003C0000)
 #define RCC_CFGR_PLLMULL_0 ((u32_t)0x00040000)
 #define RCC_CFGR_PLLMULL_1 ((u32_t)0x00080000)
 #define RCC_CFGR_PLLMULL_2 ((u32_t)0x00100000)
 #define RCC_CFGR_PLLMULL_3 ((u32_t)0x00200000)
-
-#define RCC_CFGR_PLLSRC_HSI_DIV2 ((u32_t)0x00000000)
-#define RCC_CFGR_PLLSRC_PREDIV1 ((u32_t)0x00010000)
-#define RCC_CFGR_PLLSRC_HSE ((u32_t)0x00010000)
-#define RCC_CFGR_PLLXTPRE_PREDIV1 ((u32_t)0x00000000)
-#define RCC_CFGR_PLLXTPRE_HSE ((u32_t)0x00000000)
-#define RCC_CFGR_PLLXTPRE_PREDIV1_DIV2 ((u32_t)0x00020000)
-#define RCC_CFGR_PLLXTPRE_HSE_DIV2 ((u32_t)0x00020000)
 #define RCC_CFGR_PLLMULL_MUL2 ((u32_t)0x00000000)
 #define RCC_CFGR_PLLMULL_MUL3 ((u32_t)0x00040000)
 #define RCC_CFGR_PLLMULL_MUL4 ((u32_t)0x00080000)
@@ -127,16 +147,15 @@ struct rcc
 #define RCC_CFGR_MCO_1 ((u32_t)0x02000000)
 #define RCC_CFGR_MCO_2 ((u32_t)0x04000000)
 #define RCC_CFGR_MCO_3 ((u32_t)0x08000000)
-#define RCC_CFGR_MCO_NOCLOCK ((u32_t)0x00000000)
+#define RCC_CFGR_MCO_NONE ((u32_t)0x00000000)
 #define RCC_CFGR_MCO_SYSCLK ((u32_t)0x04000000)
 #define RCC_CFGR_MCO_HSI ((u32_t)0x05000000)
 #define RCC_CFGR_MCO_HSE ((u32_t)0x06000000)
-#define RCC_CFGR_MCO_PLL ((u32_t)0x07000000)
-#define RCC_CFGR_MCO_PLLCLK_DIV2 ((u32_t)0x07000000)
-#define RCC_CFGR_MCO_PLL2CLK ((u32_t)0x08000000)
-#define RCC_CFGR_MCO_PLL3CLK_DIV2 ((u32_t)0x09000000)
+#define RCC_CFGR_MCO_PLL_DIV2 ((u32_t)0x07000000)
+#define RCC_CFGR_MCO_PLL2 ((u32_t)0x08000000)
+#define RCC_CFGR_MCO_PLL3_DIV2 ((u32_t)0x09000000)
 #define RCC_CFGR_MCO_EXT_HSE ((u32_t)0x0A000000)
-#define RCC_CFGR_MCO_PLL3CLK ((u32_t)0x0B000000)
+#define RCC_CFGR_MCO_PLL3 ((u32_t)0x0B000000)
 
 #define RCC_CIR_LSIRDYF ((u32_t)0x00000001)
 #define RCC_CIR_LSERDYF ((u32_t)0x00000002)
@@ -176,6 +195,9 @@ struct rcc
 #define RCC_APB2RSTR_SPI1RST ((u32_t)0x00001000)
 #define RCC_APB2RSTR_TIM8RST ((u32_t)0x00002000)
 #define RCC_APB2RSTR_USART1RST ((u32_t)0x00004000)
+#define RCC_APB2RSTR_TIM15RST ((u32_t)0x00010000)
+#define RCC_APB2RSTR_TIM16RST ((u32_t)0x00020000)
+#define RCC_APB2RSTR_TIM17RST ((u32_t)0x00040000)
 #define RCC_APB2RSTR_ADC3RST ((u32_t)0x00008000)
 #define RCC_APB2RSTR_TIM9RST ((u32_t)0x00080000)
 #define RCC_APB2RSTR_TIM10RST ((u32_t)0x00100000)
@@ -196,6 +218,9 @@ struct rcc
 #define RCC_APB2ENR_TIM8EN ((u32_t)0x00002000)
 #define RCC_APB2ENR_USART1EN ((u32_t)0x00004000)
 #define RCC_APB2ENR_ADC3EN ((u32_t)0x00008000)
+#define RCC_APB2ENR_TIM15EN ((u32_t)0x00010000)
+#define RCC_APB2ENR_TIM16EN ((u32_t)0x00020000)
+#define RCC_APB2ENR_TIM17EN ((u32_t)0x00040000)
 #define RCC_APB2ENR_TIM9EN ((u32_t)0x00080000)
 #define RCC_APB2ENR_TIM10EN ((u32_t)0x00100000)
 #define RCC_APB2ENR_TIM11EN ((u32_t)0x00200000)
@@ -224,6 +249,7 @@ struct rcc
 #define RCC_APB1RSTR_BKPRST ((u32_t)0x08000000)
 #define RCC_APB1RSTR_PWRRST ((u32_t)0x10000000)
 #define RCC_APB1RSTR_DACRST ((u32_t)0x20000000)
+#define RCC_APB1RSTR_CECRST ((u32_t)0x40000000)
 
 #define RCC_APB1ENR_TIM2EN ((u32_t)0x00000001)
 #define RCC_APB1ENR_TIM3EN ((u32_t)0x00000002)
@@ -249,6 +275,7 @@ struct rcc
 #define RCC_APB1ENR_BKPEN ((u32_t)0x08000000)
 #define RCC_APB1ENR_PWREN ((u32_t)0x10000000)
 #define RCC_APB1ENR_DACEN ((u32_t)0x20000000)
+#define RCC_APB1ENR_CECEN ((u32_t)0x40000000)
 
 #define RCC_AHBRSTR_OTGFSRST ((u32_t)0x00001000)
 #define RCC_AHBRSTR_ETHMACRST ((u32_t)0x00004000)
@@ -271,7 +298,7 @@ struct rcc
 #define RCC_BDCR_RTCSEL ((u32_t)0x00000300)
 #define RCC_BDCR_RTCSEL_0 ((u32_t)0x00000100)
 #define RCC_BDCR_RTCSEL_1 ((u32_t)0x00000200)
-#define RCC_BDCR_RTCSEL_NOCLOCK ((u32_t)0x00000000)
+#define RCC_BDCR_RTCSEL_NONE ((u32_t)0x00000000)
 #define RCC_BDCR_RTCSEL_LSE ((u32_t)0x00000100)
 #define RCC_BDCR_RTCSEL_LSI ((u32_t)0x00000200)
 #define RCC_BDCR_RTCSEL_HSE ((u32_t)0x00000300)
