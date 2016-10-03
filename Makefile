@@ -65,8 +65,7 @@ LFLAGS = -nostdlib -T $(SCRIPT) -Map $(MAP)
 all: $(HEX) $(LST)
 
 $(HEX): $(ELF)
-	@echo "Creating $(HEX)..."
-	
+	@echo "Creating $(HEX)..."	
 	$(OC) -j .text -j .data -O ihex $< $@
 
 $(LST): $(ELF)
