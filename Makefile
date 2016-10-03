@@ -23,18 +23,19 @@
 
 # Project files
 
-TARGET ?= swamp
+TARGET ?= app
 SCRIPT ?= kernel/target/stm32f103xc.ld
-DIRS ?= kernel
+MODULES ?= app kernel
 PORT ?= /dev/ttyUSB0
-INCDIRS = $(addsuffix /include, $(DIRS))
-SRCDIRS = $(addsuffix /source, $(DIRS))
+
+INCDIRS = $(addsuffix /include, $(MODULES))
+SRCDIRS = $(addsuffix /source, $(MODULES))
 
 HEX = $(TARGET).hex
 ELF = $(TARGET).elf
 MAP = $(TARGET).map
 LST = $(TARGET).lst
-DEF = $(foreach DIR, $(DIRS),-D _$(DIR)_)
+DEF = $(foreach MOD, $(MODULES),-D swamp_$(MOD)_module)
 INC = $(foreach DIR, $(INCDIRS),-I $(DIR))
 SRC = $(foreach DIR, $(SRCDIRS), $(wildcard $(DIR)/*.c))
 OBJ = $(SRC:.c=.o)

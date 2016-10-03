@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-#if defined(_cdc_)
+#if defined(swamp_cdc_module)
 
 #include <threads.h>
 #include <timers.h>
@@ -77,7 +77,7 @@ void main(void)
     }
 }
 
-#elif defined(_hid_)
+#elif defined(swamp_hid_module)
 
 #include <threads.h>
 #include <timers.h>
