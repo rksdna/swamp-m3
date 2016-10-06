@@ -24,7 +24,7 @@
 # Project files
 
 TARGET ?= app
-SCRIPT ?= kernel/target/stm32f103xc.ld
+SCRIPT ?= kernel/target/stm32f103xb.ld
 MODULES ?= app kernel
 PORT ?= /dev/ttyUSB0
 

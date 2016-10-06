@@ -1,5 +1,5 @@
 /*
- * STM32F103xC linker script
+ * STM32F103x8 linker script
  * Copyright (c) 2016 rksdna
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
