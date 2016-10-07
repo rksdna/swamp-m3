@@ -28,5 +28,6 @@
 
 void startup_board(void);
 void board_usb_pullup(u32_t state);
+void board_info(void);
 
 #endif
