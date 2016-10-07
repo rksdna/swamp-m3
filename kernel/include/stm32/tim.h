@@ -243,6 +243,7 @@ struct tim
 #define TIM_CCER_CC3NP ((u32_t)0x00000800)
 #define TIM_CCER_CC4E ((u32_t)0x00001000)
 #define TIM_CCER_CC4P ((u32_t)0x00002000)
+#define TIM_CCER_CC4NP ((u32_t)0x00008000)
 
 #define TIM_CNT_CNT ((u32_t)0x0000FFFF)
 

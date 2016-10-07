@@ -35,4 +35,8 @@ struct des
 
 #define DES ((struct des *)0x1FFFF7E0)
 
+#define DES_ID_ID ((u32_t)0xFFFFFFFF)
+
+#define DES_FSIZE_FSIZE ((u32_t)0x0000FFFF)
+
 #endif

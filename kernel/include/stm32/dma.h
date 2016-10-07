@@ -26,7 +26,7 @@
 
 #include <types.h>
 
-struct dma_ch
+struct dma_channel
 {
     volatile u32_t CCR;
     volatile u32_t CNDTR;
@@ -39,7 +39,7 @@ struct dma
 {
     volatile u32_t ISR;
     volatile u32_t IFCR;
-    struct dma_ch CH[7];
+    struct dma_channel CH[8];
 };
 
 #define DMA1 ((struct dma *)0x40020000)
@@ -103,35 +103,35 @@ struct dma
 #define DMA_IFCR_CHTIF7 ((u32_t)0x04000000)
 #define DMA_IFCR_CTEIF7 ((u32_t)0x08000000)
 
-#define DMA_CH_CCR_EN ((u32_t)0x00000001)
-#define DMA_CH_CCR_TCIE ((u32_t)0x00000002)
-#define DMA_CH_CCR_HTIE ((u32_t)0x00000004)
-#define DMA_CH_CCR_TEIE ((u32_t)0x00000008)
-#define DMA_CH_CCR_DIR ((u32_t)0x00000010)
-#define DMA_CH_CCR_CIRC ((u32_t)0x00000020)
-#define DMA_CH_CCR_PINC ((u32_t)0x00000040)
-#define DMA_CH_CCR_MINC ((u32_t)0x00000080)
-#define DMA_CH_CCR_PSIZE ((u32_t)0x00000300)
-#define DMA_CH_CCR_PSIZE_0 ((u32_t)0x00000100)
-#define DMA_CH_CCR_PSIZE_1 ((u32_t)0x00000200)
-#define DMA_CH_CCR_PSIZE_8BIT ((u32_t)0x00000300)
-#define DMA_CH_CCR_PSIZE_16BIT ((u32_t)0x00000100)
-#define DMA_CH_CCR_PSIZE_32BIT ((u32_t)0x00000200)
-#define DMA_CH_CCR_MSIZE ((u32_t)0x00000C00)
-#define DMA_CH_CCR_MSIZE_0 ((u32_t)0x00000400)
-#define DMA_CH_CCR_MSIZE_1 ((u32_t)0x00000800)
-#define DMA_CH_CCR_MSIZE_8BIT ((u32_t)0x00000C00)
-#define DMA_CH_CCR_MSIZE_16BIT ((u32_t)0x00000400)
-#define DMA_CH_CCR_MSIZE_32BIT ((u32_t)0x00000800)
-#define DMA_CH_CCR_PL ((u32_t)0x00003000)
-#define DMA_CH_CCR_PL_0 ((u32_t)0x00001000)
-#define DMA_CH_CCR_PL_1 ((u32_t)0x00002000)
-#define DMA_CH_CCR_MEM2MEM ((u32_t)0x00004000)
+#define DMA_CCR_EN ((u32_t)0x00000001)
+#define DMA_CCR_TCIE ((u32_t)0x00000002)
+#define DMA_CCR_HTIE ((u32_t)0x00000004)
+#define DMA_CCR_TEIE ((u32_t)0x00000008)
+#define DMA_CCR_DIR ((u32_t)0x00000010)
+#define DMA_CCR_CIRC ((u32_t)0x00000020)
+#define DMA_CCR_PINC ((u32_t)0x00000040)
+#define DMA_CCR_MINC ((u32_t)0x00000080)
+#define DMA_CCR_PSIZE ((u32_t)0x00000300)
+#define DMA_CCR_PSIZE_0 ((u32_t)0x00000100)
+#define DMA_CCR_PSIZE_1 ((u32_t)0x00000200)
+#define DMA_CCR_PSIZE_8BIT ((u32_t)0x00000000)
+#define DMA_CCR_PSIZE_16BIT ((u32_t)0x00000100)
+#define DMA_CCR_PSIZE_32BIT ((u32_t)0x00000200)
+#define DMA_CCR_MSIZE ((u32_t)0x00000C00)
+#define DMA_CCR_MSIZE_0 ((u32_t)0x00000400)
+#define DMA_CCR_MSIZE_1 ((u32_t)0x00000800)
+#define DMA_CCR_MSIZE_8BIT ((u32_t)0x00000000)
+#define DMA_CCR_MSIZE_16BIT ((u32_t)0x00000400)
+#define DMA_CCR_MSIZE_32BIT ((u32_t)0x00000800)
+#define DMA_CCR_PL ((u32_t)0x00003000)
+#define DMA_CCR_PL_0 ((u32_t)0x00001000)
+#define DMA_CCR_PL_1 ((u32_t)0x00002000)
+#define DMA_CCR_MEM2MEM ((u32_t)0x00004000)
 
-#define DMA_CH_CNDTR_NDT ((u32_t)0x0000FFFF)
+#define DMA_CNDTR_NDT ((u32_t)0x0000FFFF)
 
-#define DMA_CH_CPAR_PA ((u32_t)0xFFFFFFFF)
+#define DMA_CPAR_PA ((u32_t)0xFFFFFFFF)
 
-#define DMA_CH_CMAR_MA ((u32_t)0xFFFFFFFF)
+#define DMA_CMAR_MA ((u32_t)0xFFFFFFFF)
 
 #endif

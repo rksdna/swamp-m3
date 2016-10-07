@@ -34,9 +34,6 @@ struct dbgmcu
 
 #define DBGMCU ((struct dbgmcu *)0xE0042000)
 
-#define DBGMCU_IDCODE_DEV_ID ((u32_t)0x00000FFF)
-#define DBGMCU_IDCODE_REV_ID ((u32_t)0xFFFF0000)
-
 #define DBGMCU_CR_DBG_SLEEP ((u32_t)0x00000001)
 #define DBGMCU_CR_DBG_STOP ((u32_t)0x00000002)
 #define DBGMCU_CR_DBG_STANDBY ((u32_t)0x00000004)
@@ -67,5 +64,8 @@ struct dbgmcu
 #define DBGMCU_CR_DBG_TIM9_STOP ((u32_t)0x10000000)
 #define DBGMCU_CR_DBG_TIM10_STOP ((u32_t)0x20000000)
 #define DBGMCU_CR_DBG_TIM11_STOP ((u32_t)0x40000000)
+
+#define DBGMCU_IDCODE_DEV_ID ((u32_t)0x00000FFF)
+#define DBGMCU_IDCODE_REV_ID ((u32_t)0xFFFF0000)
 
 #endif

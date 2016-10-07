@@ -215,7 +215,7 @@ struct nvic
 #define NVIC_IABR_ACTIVE_30 ((u32_t)0x40000000)
 #define NVIC_IABR_ACTIVE_31 ((u32_t)0x80000000)
 
-#define NVIC_IPx_PR ((u8_t)0xFF)
+#define NVIC_IP_PR ((u8_t)0xFF)
 
 #define NVIC_STIR_INTID ((u32_t)0x000001FF)
 

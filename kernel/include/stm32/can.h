@@ -26,7 +26,7 @@
 
 #include <types.h>
 
-struct can_tx
+struct can_tx_box
 {
     volatile u32_t TIR;
     volatile u32_t TDTR;
@@ -34,7 +34,7 @@ struct can_tx
     volatile u32_t TDHR;
 };
 
-struct can_rx
+struct can_rx_box
 {
     volatile u32_t RIR;
     volatile u32_t RDTR;
@@ -59,8 +59,8 @@ struct can
     volatile u32_t ESR;
     volatile u32_t BTR;
     u32_t RESERVED0[88];
-    struct can_tx TX[3];
-    struct can_rx RX[2];
+    struct can_tx_box TX[3];
+    struct can_rx_box RX[2];
     u32_t RESERVED1[12];
     volatile u32_t FMR;
     volatile u32_t FM1R;

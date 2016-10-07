@@ -40,8 +40,8 @@ struct wwdg
 
 #define WWDG_CFR_W ((u32_t)0x0000007F)
 #define WWDG_CFR_WDGTB ((u32_t)0x00000180)
-#define WWDG_CFR_WDGTB0 ((u32_t)0x00000080)
-#define WWDG_CFR_WDGTB1 ((u32_t)0x00000100)
+#define WWDG_CFR_WDGTB_0 ((u32_t)0x00000080)
+#define WWDG_CFR_WDGTB_1 ((u32_t)0x00000100)
 #define WWDG_CFR_EWI ((u32_t)0x00000200)
 
 #define WWDG_SR_EWIF ((u32_t)0x00000001)
