@@ -61,6 +61,7 @@ struct bind
 {
     volatile u32_t *status;
     u32_t mask;
+    u32_t complement;
 };
 
 extern u32_t stack_section_end;
@@ -109,7 +110,7 @@ void startup_handler(void)
     SCB->SHP[10] = 0xFF;
     SCB->SHP[11] = 0x00;
 
-    SCB->CCR = SCB_CCR_DIV_0_TRP | SCB_CCR_UNALIGN_TRP;
+    SCB->CCR = SCB_CCR_DIV_0_TRP; // Unaligned access permission
     SCB->SHCSR = 0;
 
     asm volatile ("msr psp, %0\n"
@@ -256,12 +257,12 @@ void yield_thread(condition_t condition, void *data)
 
 static u32_t status_condition(struct bind *bind)
 {
-    return *(bind->status) & bind->mask;
+    return (*(bind->status) ^ bind->complement) & bind->mask;
 }
 
-void wait_status(volatile u32_t *status, u32_t mask)
+void wait_status(volatile u32_t *status, u32_t mask, u32_t complement)
 {
-    struct bind bind = {status, mask};
+    struct bind bind = {status, mask, complement};
     yield_thread((condition_t)status_condition, &bind);
 }
 
@@ -308,3 +309,4 @@ void stop(void)
                  "label_again:\n"
                  "b label_again\n" : : : );
 }
+

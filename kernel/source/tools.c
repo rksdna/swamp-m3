@@ -180,32 +180,10 @@ void print(struct stream *stream, const char *format, ...)
 
 void copy(void *destination, const void *source, u32_t size)
 {
-    if (size > 4 * sizeof(u32_t))
+    while (size > sizeof(u32_t))
     {
-        u32_t count = (u32_t)destination % sizeof(u32_t);
-        size -= count;
-        while (count--)
-            COPY(destination, source, u8_t);
-
-        switch ((u32_t)source % sizeof(u32_t))
-        {
-        case 0:
-            count = size / sizeof(u32_t);
-            size %= sizeof(u32_t);
-            while (count--)
-                COPY(destination, source, u32_t);
-            break;
-
-        case 2:
-            count = size / sizeof(u16_t);
-            size %= sizeof(u16_t);
-            while (count--)
-                COPY(destination, source, u16_t);
-            break;
-
-        default:
-            break;
-        }
+        COPY(destination, source, u32_t);
+        size -= sizeof(u32_t);
     }
 
     while (size--)
@@ -220,19 +198,12 @@ void *memcpy(void *destination, const void *source, u32_t size)
 
 void fill(void *destination, u8_t value, u32_t size)
 {
-    if (size > 2 * sizeof(u32_t))
+    const u32_t pattern = value | (value << 8) | (value << 16) | (value << 24);
+
+    while (size > sizeof(u32_t))
     {
-        const u32_t pattern = value | (value << 8) | (value << 16) | (value << 24);
-
-        u32_t count = (u32_t)destination % sizeof(u32_t);
-        size -= count;
-        while (count--)
-            FILL(destination, pattern, u8_t);
-
-        count = size / sizeof(u32_t);
-        size %= sizeof(u32_t);
-        while (count--)
-            FILL(destination, pattern, u32_t);
+        FILL(destination, pattern, u32_t);
+        size -= sizeof(u32_t);
     }
 
     while (size--)
@@ -244,4 +215,3 @@ void *memset(void *destination, int value,  u32_t size)
     fill(destination, value, size);
     return destination;
 }
-

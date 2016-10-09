@@ -21,17 +21,25 @@
  * THE SOFTWARE.
  */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef IP_H
+#define IP_H
 
 #include <types.h>
 
-void startup_board_103(void);
-void board_usb_pullup(u32_t state);
+#define IP_SIZE 4
+#define MAC_SIZE 6
 
-void startup_board_107(void);
-void board_phy_reset(u32_t state);
+struct ip_socket
+{
+    const u8_t *mac;
+    const u8_t *ip;
+    u16_t port;
+};
 
-void board_info(void);
+extern u32_t ip_address_handler(struct ip_socket *target, struct ip_socket *source);
+extern u32_t ip_ping_handler(struct ip_socket *target, struct ip_socket *source);
+extern u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, const void *request, u32_t size);
+
+u32_t poll_ip_service(void *reply, const void *request, u32_t size);
 
 #endif

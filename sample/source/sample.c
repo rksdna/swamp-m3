@@ -21,7 +21,107 @@
  * THE SOFTWARE.
  */
 
-#if defined(swamp_cdc_module)
+#if defined(swamp_ip_module)
+
+#include <threads.h>
+#include <timers.h>
+#include <tools.h>
+#include <debug.h>
+#include <phy.h>
+#include <mac.h>
+#include <ip.h>
+#include "board.h"
+
+static const u8_t swamp_mac[] =  {0x02, 0x00, 0xAA, 0xAA, 0xAA, 0xAA};
+static const u8_t swamp_ip[] = {192, 168, 1, 2};
+
+static struct thread service_thread;
+static u8_t stack[256];
+
+static void service(void *data)
+{
+    WASTE(data);
+    u32_t status = 0;
+
+    startup_phy_service();
+    debug("phy: %8x\n", get_phy_id());
+
+    while (1)
+    {
+        const u32_t new_status = has_phy_connection();
+
+        if (status != new_status)
+            debug("phy: %s\n", new_status ? "connected" : "disconnected");
+
+        status = new_status;
+
+        poll_phy_service();
+        sleep(200);
+    }
+}
+
+static u32_t equal(const u8_t *target_ip, const u8_t *source_ip)
+{
+    u32_t size = IP_SIZE;
+    while (size--)
+    {
+        if (*target_ip++ != *source_ip++)
+            return 0;
+    }
+
+    return 1;
+}
+
+u32_t ip_address_handler(struct ip_socket *target, struct ip_socket *source)
+{
+    debug("arp: [%6m] %4m -> [%6m] %4m\n", source->mac, source->ip, target->mac, target->ip);
+    target->mac = swamp_mac;
+    return equal(target->ip, swamp_ip);
+}
+
+u32_t ip_ping_handler(struct ip_socket *target, struct ip_socket *source)
+{
+    debug("icmp: [%6m] %4m -> [%6m] %4m\n", source->mac, source->ip, target->mac, target->ip);
+    return equal(target->ip, swamp_ip);
+}
+
+u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, const void *request, u32_t size)
+{
+    debug("udp: [%6m] %4m:%d -> [%6m] %4m:%d\n", source->mac, source->ip, source->port, target->mac, target->ip, target->port);
+    debug("--data: %*m\n", size, request);
+
+    if (equal(target->ip, swamp_ip))
+    {
+        copy(reply, "ok", 2);
+        return size;
+    }
+
+    return 0;
+}
+
+void main(void)
+{
+    startup_board_107();
+
+    board_phy_reset(0);
+
+    start_thread(&service_thread, service, 0, stack, sizeof(stack));
+
+    startup_mac_service(swamp_mac);
+
+    while (1)
+    {
+        u32_t size = 0;
+        const void *request = wait_mac_rx_full(&size);
+        void *reply = wait_mac_tx_empty();
+        size = poll_ip_service(reply, request, size);
+        receive_mac_rx();
+        if (size)
+            send_mac_tx_buffer(size);
+    }
+}
+
+#elif defined(swamp_cdc_module)
 
 #include <threads.h>
 #include <timers.h>
@@ -51,7 +151,7 @@ void pullup_cdc(u32_t state)
 
 void main(void)
 {
-    startup_board();
+    startup_board_103();
 
     start_thread(&service_thread, service, 0, stack, sizeof(stack));
 
@@ -69,7 +169,7 @@ void main(void)
             if (count)
             {
                 write_cdc_data(buffer, count);
-                debug("%m\n", buffer, count);
+                debug("%*m\n", count, buffer);
             }
         }
 
@@ -132,7 +232,7 @@ void pullup_hid(u32_t state)
 
 void main(void)
 {
-    startup_board();
+    startup_board_103();
 
     start_thread(&service_thread, service, 0, stack, sizeof(stack));
 
@@ -206,7 +306,7 @@ void main(void)
 {
     u32_t count = 20;
 
-    startup_board();
+    startup_board_103();
 
     debug("[%s] [%2s] [%6s] [%*s]\n", "abcd", "abcd", "abcd", 5, "abcd");
     debug("[%d] [%d] [%d] [%4d] [%12d] [%*d]\n", 0, 1, -1, 654321, 654321, 9, 654321);

@@ -21,17 +21,15 @@
  * THE SOFTWARE.
  */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef PHY_H
+#define PHY_H
 
 #include <types.h>
 
-void startup_board_103(void);
-void board_usb_pullup(u32_t state);
+void startup_phy_service(void);
+void poll_phy_service(void);
 
-void startup_board_107(void);
-void board_phy_reset(u32_t state);
-
-void board_info(void);
+u32_t has_phy_connection(void);
+u32_t get_phy_id(void);
 
 #endif

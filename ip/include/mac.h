@@ -21,17 +21,17 @@
  * THE SOFTWARE.
  */
 
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef MAC_H
+#define MAC_H
 
 #include <types.h>
 
-void startup_board_103(void);
-void board_usb_pullup(u32_t state);
+void startup_mac_service(const u8_t *mac);
 
-void startup_board_107(void);
-void board_phy_reset(u32_t state);
+void * wait_mac_tx_empty(void);
+void send_mac_tx_buffer(u32_t size);
 
-void board_info(void);
+void * wait_mac_rx_full(u32_t * size);
+void receive_mac_rx(void);
 
 #endif
