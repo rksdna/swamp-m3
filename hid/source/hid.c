@@ -260,33 +260,27 @@ static u32_t limit(u32_t size, u32_t max_size)
 static void write_pma(const void *data, u32_t offset, u32_t size)
 {
     u32_t count = size / sizeof(u16_t);
-    const u8_t *source = (const u8_t *)data;
-    u32_t *destination = (u32_t *)((u8_t *)PMA + offset * sizeof(u32_t) / sizeof(u16_t));
-    while (count--)
-    {
-        u16_t value = *source++;
-        value |= (*source++) << 8;
-        *destination++ = value;
-    }
+    const u16_t *source = data;
+    u32_t *destination = (void *)PMA + offset * sizeof(u32_t) / sizeof(u16_t);
 
-    if (source - (const u8_t *)data < size)
-        *destination = *source;
+    while (count--)
+        *destination++ = *source++;
+
+    if (size > (const void *)source - data)
+        *destination = *(const u8_t *)source;
 }
 
 static void read_pma(void *data, u32_t offset, u32_t size)
 {
     u32_t count = size / sizeof(u16_t);
-    u8_t *destination = (u8_t *)data;
-    const u32_t *source = (const u32_t *)((const u8_t *)PMA + offset * sizeof(u32_t) / sizeof(u16_t));
-    while (count--)
-    {
-        u16_t value = *source++;
-        *destination++ = value;
-        *destination++ = value >> 8;
-    }
+    u16_t *destination = data;
+    const u32_t *source = (const void *)PMA + offset * sizeof(u32_t) / sizeof(u16_t);
 
-    if (destination - (u8_t *)data < size)
-        *destination = *source;
+    while (count--)
+        *destination++ = *source++;
+
+    if (size > (void *)destination - data)
+        *(u8_t *)destination = *source;
 }
 
 static void write_ep0_buffer(const void *data, u32_t size)
