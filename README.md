@@ -8,11 +8,12 @@ Building samples:
 make MODULES="sample kernel" all
 make MODULES="sample kernel cdc" all
 make MODULES="sample kernel hid" all
+make MODULES="sample kernel ip" all
 ```
 
 Clean samples:
 ```
-make MODULES="sample kernel cdc hid" clean
+make MODULES="sample kernel cdc hid ip" clean
 ```
 
 Building your application:
