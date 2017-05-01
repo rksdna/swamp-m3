@@ -198,7 +198,8 @@ static const u8_t product_descriptor[] =
 };
 
 static u16_t usb_connected;
-static u16_t coding_changed;
+static u8_t coding_changed;
+static u8_t zlp;
 static u16_t tail_size;
 static u16_t tail_address;
 
@@ -383,6 +384,8 @@ static void write_ep2_buffer(void)
     write_pma(ep2.data, PMA[buffer], count);
     PMA[buffer + 1] = count;
 
+    zlp = ep2.size == EP2_SIZE;
+
     ep2.time = ep0.time;
     ep2.size -= count;
     ep2.data += count;
@@ -391,7 +394,7 @@ static void write_ep2_buffer(void)
 static void input_ep2_handler(void)
 {
     USB->EP2R = 2 | USB_EP_TYPE_BULK | USB_EP_KIND;
-    if (ep2.data && ep2.size)
+    if (ep2.data && (ep2.size || zlp))
     {
         write_ep2_buffer();
         USB->EP2R = 2 | USB_EP_TYPE_BULK | USB_EP_KIND | USB_EP_DBUF_TX | USB_EP_CTR_TX;
@@ -545,7 +548,7 @@ u32_t write_cdc_data(const void *data, u32_t size)
     USB->EP2R = 2 | USB_EP_TYPE_BULK | USB_EP_KIND | USB_EP_DBUF_TX | USB_EP_CTR_TX;
 
     yield_thread((condition_t)end_condition, &ep2);
-    return size - ep1.size;
+    return size - ep2.size;
 }
 
 u32_t read_cdc_data(void *data, u32_t size)
