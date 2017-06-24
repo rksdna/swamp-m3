@@ -62,7 +62,7 @@ static u32_t phy_bsr = 0;
 static u32_t read_phy_register(u32_t address, u32_t reg)
 {
     ETH->MACMIIAR = ((address << 11) & ETH_MACMIIAR_PA) | ((reg << 6) & ETH_MACMIIAR_MR) | ETH_MACMIIAR_CR_DIV42 | ETH_MACMIIAR_MB;
-    wait_status(&ETH->MACMIIAR, ETH_MACMIIAR_MB, ETH_MACMIIAR_MB);
+    wait_for(&ETH->MACMIIAR, ETH_MACMIIAR_MB, 0);
     return ETH->MACMIIDR;
 }
 
@@ -70,7 +70,7 @@ static void write_phy_register(u32_t address, u32_t reg, u32_t value)
 {
     ETH->MACMIIDR = value;
     ETH->MACMIIAR = ((address << 11) & ETH_MACMIIAR_PA) | ((reg << 6) & ETH_MACMIIAR_MR) | ETH_MACMIIAR_CR_DIV42 | ETH_MACMIIAR_MW | ETH_MACMIIAR_MB;
-    wait_status(&ETH->MACMIIAR, ETH_MACMIIAR_MB, ETH_MACMIIAR_MB);
+    wait_for(&ETH->MACMIIAR, ETH_MACMIIAR_MB, 0);
 }
 
 void startup_phy_service(void)

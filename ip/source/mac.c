@@ -72,7 +72,7 @@ static void make_buffers(void)
 void startup_mac_service(const u8_t *mac)
 {
     ETH->DMABMR |= ETH_DMABMR_SR;
-    wait_status(&ETH->DMABMR, ETH_DMABMR_SR, ETH_DMABMR_SR);
+    wait_for(&ETH->DMABMR, ETH_DMABMR_SR, 0);
 
     ETH->MACCR = ETH_MACCR_ROD | ETH_MACCR_APCS;
     ETH->MACA0LR = mac[0] | (mac[1] << 8) | (mac[2] << 16) | (mac[3] << 24);
@@ -95,7 +95,7 @@ void startup_mac_service(const u8_t *mac)
 void *wait_mac_tx_empty(void)
 {
     if (tx_descriptor->TDES0 & ETH_TDES0_OWN)
-        wait_status(&tx_descriptor->TDES0, ETH_TDES0_OWN, ETH_TDES0_OWN);
+        wait_for(&tx_descriptor->TDES0, ETH_TDES0_OWN, 0);
 
     return (void *)tx_descriptor->TDES2;
 }
@@ -118,7 +118,7 @@ void * wait_mac_rx_full(u32_t * size)
 {
     while (1)
     {
-        wait_status(&rx_descriptor->RDES0, ETH_RDES0_OWN, ETH_RDES0_OWN);
+        wait_for(&rx_descriptor->RDES0, ETH_RDES0_OWN, 0);
 
         if ((rx_descriptor->RDES0 & (ETH_RDES0_FS | ETH_RDES0_LS | ETH_RDES0_ES)) == (ETH_RDES0_FS | ETH_RDES0_LS))
             break;

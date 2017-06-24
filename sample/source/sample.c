@@ -138,7 +138,7 @@ static void service(void *data)
     WASTE(data);
     while (1)
     {
-        wait_signal(has_cdc_line_coding);
+        yield_thread((condition_t)has_cdc_line_coding, 0);
         const struct line_coding *coding = get_cdc_line_coding();
         debug("baudrate: %d, data %d, parity %d, stop %d\n", coding->baud_rate, coding->data_bits, coding->parity_type, coding->stop_bits);
     }
@@ -159,7 +159,7 @@ void main(void)
     set_cdc_timeout(10);
     while (1)
     {
-        wait_signal(has_cdc_connection);
+        yield_thread((condition_t)has_cdc_connection, 0);
         debug("connected\n");
         while (has_cdc_connection())
         {
@@ -239,7 +239,7 @@ void main(void)
     start_hid_service();
     while (1)
     {
-        wait_signal(has_hid_connection);
+        yield_thread((condition_t)has_hid_connection, 0);
         debug("connected\n");
 
         while (has_hid_connection())
