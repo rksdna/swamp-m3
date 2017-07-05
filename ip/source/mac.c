@@ -27,50 +27,30 @@
 #include <threads.h>
 #include <mac.h>
 
-#define TX_BUFFERS_COUNT 2
-#define RX_BUFFERS_COUNT 4
-#define BUFFER_SIZE 1536
-
-static u8_t tx_buffers[TX_BUFFERS_COUNT][BUFFER_SIZE];
-static u8_t rx_buffers[RX_BUFFERS_COUNT][BUFFER_SIZE];
-static struct eth_tx tx_descriptors[TX_BUFFERS_COUNT];
-static struct eth_rx rx_descriptors[RX_BUFFERS_COUNT];
+#define MAC_DESCRIPTORS_COUNT 8
 
 static struct eth_tx *tx_descriptor;
 static struct eth_rx *rx_descriptor;
 
-static void make_buffers(void)
-{
-    u32_t i = TX_BUFFERS_COUNT;
-    while (i--)
-    {
-        tx_descriptors[i].TDES0 = ETH_TDES0_IC | ETH_TDES0_TCH;
-        tx_descriptors[i].TDES1 = 0;
-        tx_descriptors[i].TDES2 = (u32_t)tx_buffers[i];
-        tx_descriptors[i].TDES3 = (u32_t)&tx_descriptors[i + 1];
-    }
-
-    tx_descriptors[TX_BUFFERS_COUNT - 1].TDES3 = (u32_t)&tx_descriptors[0];
-
-    i = RX_BUFFERS_COUNT;
-    while (i--)
-    {
-        rx_descriptors[i].RDES0 = ETH_RDES0_OWN;
-        rx_descriptors[i].RDES1 = ETH_RDES1_RCH | (BUFFER_SIZE & ETH_RDES1_RBS1);
-        rx_descriptors[i].RDES2 = (u32_t)rx_buffers[i];
-        rx_descriptors[i].RDES3 = (u32_t)&rx_descriptors[i + 1];
-    }
-
-    rx_descriptors[RX_BUFFERS_COUNT - 1].RDES3 = (u32_t)&rx_descriptors[0];
-
-    tx_descriptor = tx_descriptors;
-    rx_descriptor = rx_descriptors;
-    ETH->DMATDLAR = (u32_t)tx_descriptors;
-    ETH->DMARDLAR = (u32_t)rx_descriptors;
-}
-
 void startup_mac_service(const u8_t *mac)
 {
+    static struct eth_tx tx_descriptors[MAC_DESCRIPTORS_COUNT];
+    static struct eth_rx rx_descriptors[MAC_DESCRIPTORS_COUNT];
+
+    u32_t count = MAC_DESCRIPTORS_COUNT;
+    while (count--)
+    {
+        tx_descriptors[count].TDES0 = 0;
+        tx_descriptors[count].TDES3 = (u32_t)(tx_descriptors + count + 1);
+        rx_descriptors[count].RDES0 = 0;
+        rx_descriptors[count].RDES3 = (u32_t)(rx_descriptors + count + 1);
+    }
+
+    tx_descriptors[MAC_DESCRIPTORS_COUNT - 1].TDES3 = (u32_t)tx_descriptors;
+    rx_descriptors[MAC_DESCRIPTORS_COUNT - 1].RDES3 = (u32_t)rx_descriptors;
+    tx_descriptor = tx_descriptors;
+    rx_descriptor = rx_descriptors;
+
     ETH->DMABMR |= ETH_DMABMR_SR;
     wait_for(&ETH->DMABMR, ETH_DMABMR_SR, 0);
 
@@ -84,7 +64,8 @@ void startup_mac_service(const u8_t *mac)
     ETH->DMAOMR = ETH_DMAOMR_RSF | ETH_DMAOMR_TSF;
     ETH->DMABMR = ETH_DMABMR_AAB | ETH_DMABMR_USP | ETH_DMABMR_RDP_1BEAT | ETH_DMABMR_RTPR_1_1 | ETH_DMABMR_PBL_1BEAT;
 
-    make_buffers();
+    ETH->DMATDLAR = (u32_t)tx_descriptors;
+    ETH->DMARDLAR = (u32_t)rx_descriptors;
 
     ETH->MACIMR = 0;
     ETH->DMAIER = 0;
@@ -92,52 +73,43 @@ void startup_mac_service(const u8_t *mac)
     ETH->DMAOMR |= ETH_DMAOMR_ST | ETH_DMAOMR_SR;
 }
 
-void *wait_mac_tx_empty(void)
+void write_mac_data(const void *data, u32_t size)
 {
-    if (tx_descriptor->TDES0 & ETH_TDES0_OWN)
-        wait_for(&tx_descriptor->TDES0, ETH_TDES0_OWN, 0);
+    struct eth_tx *descriptor = tx_descriptor;
+    tx_descriptor = (struct eth_tx *)descriptor->TDES3;
 
-    return (void *)tx_descriptor->TDES2;
-}
-
-void send_mac_tx_buffer(u32_t size)
-{
-    tx_descriptor->TDES1 = size & ETH_TDES1_TBS1;
-    tx_descriptor->TDES0 |= ETH_TDES0_LS | ETH_TDES0_FS;
-    tx_descriptor->TDES0 |= ETH_TDES0_OWN;
-    tx_descriptor = (struct eth_tx *)tx_descriptor->TDES3;
+    descriptor->TDES1 = size & ETH_TDES1_TBS1;
+    descriptor->TDES2 = (u32_t)data;
+    descriptor->TDES0 = ETH_TDES0_IC | ETH_TDES0_TCH | ETH_TDES0_LS | ETH_TDES0_FS | ETH_TDES0_OWN;
 
     if (ETH->DMASR & ETH_DMASR_TBUS)
     {
         ETH->DMASR = ETH_DMASR_TBUS;
         ETH->DMATPDR = 0;
     }
+
+    wait_for(&descriptor->TDES0, ETH_RDES0_OWN, 0);
 }
 
-void * wait_mac_rx_full(u32_t * size)
+u32_t read_mac_data(void *data, u32_t size)
 {
-    while (1)
-    {
-        wait_for(&rx_descriptor->RDES0, ETH_RDES0_OWN, 0);
+    struct eth_rx *descriptor = rx_descriptor;
+    rx_descriptor = (struct eth_rx *)descriptor->RDES3;
 
-        if ((rx_descriptor->RDES0 & (ETH_RDES0_FS | ETH_RDES0_LS | ETH_RDES0_ES)) == (ETH_RDES0_FS | ETH_RDES0_LS))
-            break;
-
-        receive_mac_rx();
-    }
-
-    *size = (rx_descriptor->RDES0 & ETH_RDES0_FL) >> 16;
-    return (void *)rx_descriptor->RDES2;
-}
-
-void receive_mac_rx(void)
-{
-    rx_descriptor->RDES0 = ETH_RDES0_OWN;
-    rx_descriptor = (struct eth_rx *)rx_descriptor->RDES3;
+    descriptor->RDES1 = ETH_RDES1_RCH | (ETH_RDES1_RBS1 & size);
+    descriptor->RDES2 = (u32_t)data;
+    descriptor->RDES0 = ETH_RDES0_OWN;
 
     if (ETH->DMASR & ETH_DMASR_RBUS)
     {
         ETH->DMASR = ETH_DMASR_RBUS;
         ETH->DMARPDR = 0;
     }
+
+    wait_for(&descriptor->RDES0, ETH_RDES0_OWN, 0);
+
+    if ((descriptor->RDES0 & (ETH_RDES0_FS | ETH_RDES0_LS | ETH_RDES0_ES)) != (ETH_RDES0_FS | ETH_RDES0_LS))
+        return 0;
+
+    return (descriptor->RDES0 & ETH_RDES0_FL) >> 16;
 }

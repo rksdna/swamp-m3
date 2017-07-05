@@ -32,33 +32,11 @@
 #include <ip.h>
 #include "board.h"
 
+#define BUFFER_SIZE 1536
+#define THREAD_COUNT 4
+
 static const u8_t swamp_mac[] =  {0x02, 0x00, 0xAA, 0xAA, 0xAA, 0xAA};
 static const u8_t swamp_ip[] = {192, 168, 1, 2};
-
-static struct thread service_thread;
-static u8_t stack[256];
-
-static void service(void *data)
-{
-    WASTE(data);
-    u32_t status = 0;
-
-    startup_phy_service();
-    debug("phy: %8x\n", get_phy_id());
-
-    while (1)
-    {
-        const u32_t new_status = has_phy_connection();
-
-        if (status != new_status)
-            debug("phy: %s\n", new_status ? "connected" : "disconnected");
-
-        status = new_status;
-
-        poll_phy_service();
-        sleep(200);
-    }
-}
 
 static u32_t equal(const u8_t *target_ip, const u8_t *source_ip)
 {
@@ -85,39 +63,63 @@ u32_t ip_ping_handler(struct ip_socket *target, struct ip_socket *source)
     return equal(target->ip, swamp_ip);
 }
 
-u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, const void *request, u32_t size)
+u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, u32_t *reply_size, const void *request, u32_t request_size)
 {
     debug("udp: [%6m] %4m:%d -> [%6m] %4m:%d\n", source->mac, source->ip, source->port, target->mac, target->ip, target->port);
-    debug("--data: %*m\n", size, request);
+    debug("--data: %*m\n", request_size, request);
 
-    if (equal(target->ip, swamp_ip))
+    if (!equal(target->ip, swamp_ip))
+        return 0;
+
+    copy(reply, "ok", 2);
+    *reply_size = 2;
+    return 1;
+}
+
+static void slave(void *data)
+{
+    WASTE(data);
+    u8_t tx_buffer[BUFFER_SIZE];
+    u8_t rx_buffer[BUFFER_SIZE];
+    while (1)
     {
-        copy(reply, "ok", 2);
-        return size;
-    }
 
-    return 0;
+        const u32_t rx_size = read_mac_data(rx_buffer, sizeof(rx_buffer));
+        debug("%x: ", tx_buffer);
+        const u32_t tx_size = poll_ip_service(tx_buffer, rx_buffer, rx_size);
+        if (tx_size)
+            write_mac_data(tx_buffer, tx_size);
+    }
 }
 
 void main(void)
 {
+    static struct thread threads[THREAD_COUNT];
+    static u8_t stacks[THREAD_COUNT][512 + 2 * BUFFER_SIZE];
+
     startup_board_107();
 
     board_phy_reset(0);
-
-    start_thread(&service_thread, service, 0, stack, sizeof(stack));
-
+    startup_phy_service();
+    debug("phy: %8x\n", get_phy_id());
     startup_mac_service(swamp_mac);
 
+    u32_t count = THREAD_COUNT;
+    while (count--)
+        start_thread(&threads[count], slave, 0, stacks[count], sizeof(stacks[count]));
+
+    u32_t status = 0;
     while (1)
     {
-        u32_t size = 0;
-        const void *request = wait_mac_rx_full(&size);
-        void *reply = wait_mac_tx_empty();
-        size = poll_ip_service(reply, request, size);
-        receive_mac_rx();
-        if (size)
-            send_mac_tx_buffer(size);
+        const u32_t new_status = has_phy_connection();
+
+        if (status != new_status)
+            debug("phy: %s\n", new_status ? "connected" : "disconnected");
+
+        status = new_status;
+
+        poll_phy_service();
+        sleep(200);
     }
 }
 

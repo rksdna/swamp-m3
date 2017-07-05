@@ -38,7 +38,7 @@ struct ip_socket
 
 extern u32_t ip_address_handler(struct ip_socket *target, struct ip_socket *source);
 extern u32_t ip_ping_handler(struct ip_socket *target, struct ip_socket *source);
-extern u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, const void *request, u32_t size);
+extern u32_t ip_datagram_handler(struct ip_socket *target, struct ip_socket *source, void *reply, u32_t *reply_size, const void *request, u32_t request_size);
 
 u32_t poll_ip_service(void *reply, const void *request, u32_t size);
 

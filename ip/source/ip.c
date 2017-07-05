@@ -191,9 +191,7 @@ static u32_t udp_parse(struct ip_socket *target, struct ip_socket *source, struc
     target->port = swap16(request->TPORT);
     source->port = swap16(request->SPORT);
 
-    size = ip_datagram_handler(target, source, reply->data, request->data, size);
-
-    if (!size)
+    if (!ip_datagram_handler(target, source, reply->data, &size, request->data, size))
         return 0;
 
     size += sizeof(struct udp_frame);

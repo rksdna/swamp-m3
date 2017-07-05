@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Swamp - cooperative multitasking operating system
  * Copyright (c) 2016 rksdna
  *
@@ -28,10 +28,7 @@
 
 void startup_mac_service(const u8_t *mac);
 
-void * wait_mac_tx_empty(void);
-void send_mac_tx_buffer(u32_t size);
-
-void * wait_mac_rx_full(u32_t * size);
-void receive_mac_rx(void);
+void write_mac_data(const void *data, u32_t size);
+u32_t read_mac_data(void *data, u32_t size);
 
 #endif
