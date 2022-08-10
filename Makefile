@@ -46,15 +46,16 @@ DEP = $(SRC:.c=.d)
 PREFIX = arm-none-eabi-
 
 CC = $(PREFIX)gcc
-LD = $(PREFIX)ld
+LD = $(PREFIX)gcc
 OC = $(PREFIX)objcopy
 OD = $(PREFIX)objdump
 SZ = $(PREFIX)size
 BS = swamp-boot
 RM = rm -f
 
-CFLAGS = -nostdinc -mcpu=cortex-m3 -mthumb -ffreestanding -Wall -Os -g -MD $(INC) $(DEF)
-LFLAGS = -nostdlib -T $(SCRIPT) -Map $(MAP) 
+FLAGS = -mcpu=cortex-m3 -mthumb -ffreestanding -nostdinc -nostdlib -nostartfiles
+CFLAGS = $(FLAGS) -Wall -Os -g -MD $(INC) $(DEF)
+LFLAGS = $(FLAGS) -T $(SCRIPT) -Wl,-Map=$(MAP)
 
 # Targets
 
@@ -63,7 +64,7 @@ LFLAGS = -nostdlib -T $(SCRIPT) -Map $(MAP)
 all: $(HEX) $(LST)
 
 $(HEX): $(ELF)
-	@echo "Creating $(HEX)..."	
+	@echo "Creating $(HEX)..."
 	$(OC) -j .text -j .data -O ihex $< $@
 
 $(LST): $(ELF)
@@ -73,7 +74,7 @@ $(LST): $(ELF)
 
 $(ELF): $(OBJ)
 	@echo "Linking $(ELF)..."
-	$(LD) $(LFLAGS)  -o $@ $^
+	$(LD) $(LFLAGS)  -o $@ $^ -lgcc
 
 %.o: %.c
 	@ echo "Compiling $@..."
@@ -88,4 +89,3 @@ clean:
 	$(RM) $(OBJ) $(DEP) $(ELF) $(MAP) $(HEX) $(LST)
 
 -include $(DEP)
-
